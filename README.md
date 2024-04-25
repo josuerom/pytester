@@ -1,4 +1,4 @@
 # pytester-cf
-Testeador y también Parseador de programas escritos en (.cpp, .java .py) especificos para la plataforma codeforces.
+Testeador, parseador y también generador de programas escritos en (.cpp .java .py) especificamente para la plataforma codeforces.
 
-Debe instalar dos paquetes para su correcto funcionamiento, que son: `pip install beautifulsoup4 termcolor`
+Instale obligatoriamente: `pip install beautifulsoup4 termcolor`
