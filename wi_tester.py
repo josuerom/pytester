@@ -1,6 +1,6 @@
 """
-    author: josuerom
-    created: 25/04/24 09:11:04
+   author: josuerom
+   created: 25/04/24 09:11:04
 """
 import sys
 import os
@@ -21,11 +21,9 @@ def main(programa):
    else:
       extension = programa.split(".")[-1]
       print(colored(f"No hay soporte para programas .{extension}", "magenta"))
-      return
 
 
-def copiar_plantilla(lenguaje, destino, nombre):
-   lenguaje.lower()
+def copiar_plantilla(destino, nombre, lenguaje):
    origen = f"d:\\workspace\\contest\\templates"
    if lenguaje == "cpp":
       ruta_origen = os.path.join(origen, "template.cpp")
@@ -36,16 +34,24 @@ def copiar_plantilla(lenguaje, destino, nombre):
    else:
       print(colored(f"No existe plantilla para .{lenguaje}", "red"))
       return
-   ruta_destino = os.path.join(destino, nombre)
+   ruta_destino = os.path.join(destino, f"{nombre}.{lenguaje}")
    if not os.path.exists(destino):
       os.makedirs(destino)
    shutil.copyfile(ruta_origen, ruta_destino)
-   print(colored(f"Plantilla copiada con éxito.", "green"))
+   if lenguaje == "java":
+      with open(ruta_destino, 'r') as plantilla:
+         lineas = plantilla.readlines()
+      with open(ruta_destino, 'w') as plantilla:
+         for linea in lineas:
+            if linea.strip().startswith("public class"):
+               linea = "public class " + nombre + " {\n"
+            plantilla.write(linea)
+   print(colored(f"Plantilla creada con éxito.", "green"))
 
 
 def ruta_samples():
-   ruta_por_defecto = f"d:\\workspace\\codeforces\\src\\samples"
-   return ruta_por_defecto
+   colocar_en = f"d:\\workspace\\codeforces\\src\\samples"
+   return colocar_en
 
 
 def eliminar_archivos_de_entrada():
@@ -65,7 +71,6 @@ def obtener_input_output(id_contest, id_problema):
       soup = BeautifulSoup(response.text, 'html.parser')
       input_divs = soup.find_all('div', class_='input')
       output_divs = soup.find_all('div', class_='output')
-
       for i, (input_div, output_div) in enumerate(zip(input_divs, output_divs), start=1):
          input_text = input_div.find('pre').get_text()
          output_text = output_div.find('pre').get_text()
@@ -76,7 +81,7 @@ def obtener_input_output(id_contest, id_problema):
                output_file.write(output_text.strip())
          print(colored(f"Answer {i} copied ☑️", "yellow"))
    else:
-      print("Acá hay un error fatal:", colored(f"{url}", "red"))
+      print("Error fatal en:", colored(f"{url}", "red"))
 
 
 def ejecutar_python(programa):
@@ -101,7 +106,7 @@ def ejecutar_python(programa):
 
 
 def compilar_y_ejecutar_cpp(programa):
-   def ejecutar(programa):
+   def ejecutar_cpp(programa):
       for i in range(1, 11):
          entrada_estandar = f"{ruta_samples()}\\in{i}.txt"
          respuesta_correcta = f"{ruta_samples()}\\ans{i}.txt"
@@ -121,15 +126,15 @@ def compilar_y_ejecutar_cpp(programa):
                print(f"Output:\n{salida_generada}", end="\n")
                print(f"Answer:\n{salida_esperada}")
 
+
    nombre_ejecutable = programa.replace(".cpp", "")
    proceso_compilacion = subprocess.Popen(["g++ -std=c++17 -O2", programa, "-o", nombre_ejecutable],
                                           stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
-   _, errores_compilacion = proceso_compilacion.communicate()
+   _, salida_compilacion = proceso_compilacion.communicate()
    if proceso_compilacion.returncode == 0:
-      ejecutar(nombre_ejecutable)
+      ejecutar_cpp(nombre_ejecutable)
    else:
-      print(colored("Error de compilación:", "red"))
-      print(errores_compilacion)
+      print(colored("Error de compilación:\n", "red"), salida_compilacion)
 
 
 def ejecutar_java(programa):
@@ -156,21 +161,23 @@ def ejecutar_java(programa):
 if __name__ == "__main__":
    """En Windows
       Para verificar todos los caso de prueba:
-      python wi_test.py -t <programa>
+      python wi_tester.py -t <programa>
 
       Para obtener los casos de prueba con las salidas:
-      python wi_test.py -p <id_contest>/<id_problema>
+      python wi_tester.py -p <id_contest>/<id_problema>
 
       Para copiar y pegar la plantilla:
-      python wi_test.py -g <lenguaje> <destino> <nombre_programa>
+      python wi_tester.py -g <destino> <nombre_programa>.<extension>
    """
-   if sys.argv[1] != "-p" and sys.argv[1] != "-t" and sys.argv[1] != "-g":
+   size_args = len(sys.argv)
+   if size_args > 4 or sys.argv[1] != "-p" and sys.argv[1] != "-t" and sys.argv[1] != "-g":
       print(colored("Mijito/a instrucción invalida!", "red"))
-   elif len(sys.argv) == 3 and sys.argv[1] == "-t":
+   elif size_args == 3 and sys.argv[1] == "-t":
       main(sys.argv[2])
-   elif len(sys.argv) == 3 and sys.argv[1] == "-p":
+   elif size_args == 3 and sys.argv[1] == "-p":
       id_contest, id_problema = sys.argv[2].split("/")
       obtener_input_output(id_contest, id_problema)
-   elif len(sys.argv) == 5 and sys.argv[1] == "-g":
-      lenguaje, destino, nombre = sys.argv[2], sys.argv[3], sys.argv[4]
-      copiar_plantilla(lenguaje, destino, nombre)
+   elif size_args == 4 and sys.argv[1] == "-g":
+      destino = sys.argv[2]
+      nombre, lenguaje = sys.argv[3].split(".")
+      copiar_plantilla(destino, nombre, lenguaje.lower())
