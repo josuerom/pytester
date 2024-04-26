@@ -36,7 +36,7 @@ def copiar_plantilla(destino, nombre, lenguaje):
    else:
       print(colored(f"No existe plantilla para .{lenguaje}", "red"))
       return
-   ruta_destino = os.path.join(destino, nombre)
+   ruta_destino = os.path.join(destino, f"{nombre}.{lenguaje}")
    if not os.path.exists(destino):
       os.makedirs(destino)
    shutil.copyfile(ruta_origen, ruta_destino)
@@ -111,59 +111,59 @@ def ejecutar_python(programa):
          print(colored(f"Test case {i} passed ✅", "green"))
       else:
          print(colored(f"WA case {i}:", "red"))
-         print(f"Output:\n{salida_generada}", end="\n")
+         print(f"Output:\n{salida_generada}")
          print(f"Answer:\n{salida_esperada}")
 
 
 def compilar_ejecutar_cpp(programa):
-   def ejecutar(programa):
+   def ejecutar():
       for i in range(1, 11):
          entrada_estandar = f"{ruta_samples()}/in{i}.txt"
-         respuesta_correcta = f"{ruta_samples()}/ans{i}.txt"
+         salida_estandar = f"{ruta_samples()}/ans{i}.txt"
          if not os.path.exists(entrada_estandar):
-               break
-         with open(entrada_estandar, "r") as contenido_archivo_de_entrada:
-               entrada_estandar_datos = contenido_archivo_de_entrada.read().strip()
-         proceso = subprocess.Popen(["./" + programa], stdin=subprocess.PIPE, stdout=subprocess.PIPE,
-                                    stderr=subprocess.PIPE, text=True)
-         salida_generada, _ = proceso.communicate(input=entrada_estandar_datos)
-         with open(respuesta_correcta, "r") as contenido_archivo_de_entrada:
-               salida_esperada = contenido_archivo_de_entrada.read().strip()
+            break
+         with open(entrada_estandar, "r") as contenido_archivo_entrada:
+            input_txt = "".join(contenido_archivo_entrada.readlines())
+         proceso = subprocess.Popen(["./sol"], stdin=subprocess.PIPE, stdout=subprocess.PIPE, 
+                                 stderr=subprocess.PIPE, text=True)
+         salida_generada, _ = proceso.communicate(input=input_txt)
+         with open(salida_estandar, "r") as contenido_archivo_respuesta:
+            salida_esperada = contenido_archivo_respuesta.read()
          if salida_generada.strip() == salida_esperada.strip():
-               print(colored(f"Test case {i} passed ✅", "green"))
+            print(colored(f"Test case {i} passed ✅", "green"))
          else:
-               print(colored(f"WA case {i}:", "red"))
-               print(f"Output:\n{salida_generada}", end="\n")
-               print(f"Answer:\n{salida_esperada}")
+            print(colored(f"WA case {i}:", "red"))
+            print(f"Output:\n{salida_generada}")
+            print(f"Answer:\n{salida_esperada}")
 
-   nombre_ejecutable = programa.replace(".cpp", "")
-   proceso_compilacion = subprocess.Popen(["g++ -std=c++17 -O2", programa, "-o", nombre_ejecutable],
-                                          stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+   
+   proceso_compilacion = subprocess.Popen(["g++", "-std=c++17", "-O2", programa, "-o", "sol"],
+                                       stdout=subprocess.PIPE, stderr=subprocess.PIPE)
    _, salida_compilacion = proceso_compilacion.communicate()
    if proceso_compilacion.returncode == 0:
-      ejecutar(nombre_ejecutable)
+      ejecutar()
    else:
-      print(colored("Error de compilación:\n", "red"), salida_compilacion)
+      print(colored(f"Error de compilación:\n{salida_compilacion}", "red"))
 
 
 def ejecutar_java(programa):
    for i in range(1, 11):
       entrada_estandar = f"{ruta_samples()}/in{i}.txt"
-      respuesta_correcta = f"{ruta_samples()}/ans{i}.txt"
+      salida_estandar = f"{ruta_samples()}/ans{i}.txt"
       if not os.path.exists(entrada_estandar):
          break
-      with open(entrada_estandar, "r") as contenido_archivo_de_entrada:
-         entrada_estandar_datos = contenido_archivo_de_entrada.read().strip()
-      proceso = subprocess.Popen(["java", programa], stdin=subprocess.PIPE, stdout=subprocess.PIPE,
+      with open(entrada_estandar, "r") as contenido_archivo_entrada:
+         input_txt = "".join(contenido_archivo_entrada.readlines())
+      proceso = subprocess.Popen(["java", programa], stdin=subprocess.PIPE, stdout=subprocess.PIPE, 
                                  stderr=subprocess.PIPE, text=True)
-      salida_generada, _ = proceso.communicate(input=entrada_estandar_datos)
-      with open(respuesta_correcta, "r") as contenido_archivo_de_entrada:
-         salida_esperada = contenido_archivo_de_entrada.read().strip()
+      salida_generada, _ = proceso.communicate(input=input_txt)
+      with open(salida_estandar, "r") as contenido_archivo_respuesta:
+         salida_esperada = contenido_archivo_respuesta.read()
       if salida_generada.strip() == salida_esperada.strip():
          print(colored(f"Test case {i} passed ✅", "green"))
       else:
          print(colored(f"WA case {i}:", "red"))
-         print(f"Output:\n{salida_generada}", end="\n")
+         print(f"Output:\n{salida_generada}")
          print(f"Answer:\n{salida_esperada}")
 
 
@@ -190,3 +190,5 @@ if __name__ == "__main__":
       destino = sys.argv[2]
       nombre, lenguaje = sys.argv[3].split(".")
       copiar_plantilla(destino, nombre, lenguaje.lower())
+   else:
+      print(colored("Mijito/a instrucción invalida!", "red"), str(sys.argv))
