@@ -15,12 +15,12 @@ def probar_solucion(programa):
    if programa.strip().endswith(".py"):
       ejecutar_python(programa)
    elif programa.strip().endswith(".cpp"):
-      compilar_y_ejecutar_cpp(programa)
+      compilar_ejecutar_cpp(programa)
    elif programa.strip().endswith(".java"):
       ejecutar_java(programa)
    else:
       extension = programa.split(".")[-1]
-      print(colored(f"No hay soporte para programas .{extension}", "magenta"))
+      print(colored(f"No hay soporte para programas .{extension}", "red"))
       return
 
 
@@ -51,8 +51,8 @@ def copiar_plantilla(destino, nombre, lenguaje):
 
 
 def ruta_samples():
-   ruta_por_defecto = f"/home/josuerom/Workspace/codeforces/src/samples"
-   return ruta_por_defecto
+   colocar_en = f"/home/josuerom/Workspace/codeforces/src/samples"
+   return colocar_en
 
 
 def eliminar_archivos_de_entrada():
@@ -107,7 +107,7 @@ def ejecutar_python(programa):
          print(f"Answer:\n{salida_esperada}")
 
 
-def compilar_y_ejecutar_cpp(programa):
+def compilar_ejecutar_cpp(programa):
    def ejecutar(programa):
       for i in range(1, 11):
          entrada_estandar = f"{ruta_samples()}/in{i}.txt"
@@ -131,12 +131,11 @@ def compilar_y_ejecutar_cpp(programa):
    nombre_ejecutable = programa.replace(".cpp", "")
    proceso_compilacion = subprocess.Popen(["g++ -std=c++17 -O2", programa, "-o", nombre_ejecutable],
                                           stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
-   _, errores_compilacion = proceso_compilacion.communicate()
+   _, salida_compilacion = proceso_compilacion.communicate()
    if proceso_compilacion.returncode == 0:
       ejecutar(nombre_ejecutable)
    else:
-      print(colored("Error de compilación:", "red"))
-      print(errores_compilacion)
+      print(colored("Error de compilación:\n", "red"), salida_compilacion)
 
 
 def ejecutar_java(programa):
@@ -161,15 +160,15 @@ def ejecutar_java(programa):
 
 
 if __name__ == "__main__":
-   """En Linux
-      Para verificar todos los caso de prueba:
-      python3 li_tester.py -t <programa>
+   """En Unix (MacOS & Linux)
+      Para verificar todos los casos de prueba:
+      python3 un_tester.py -t <programa>
    
-      Para obtener los casos de prueba del problema:
-      python3 li_tester.py -p <id_contest>/<id_problema>
+      Para obtener los casos de prueba con las salidad:
+      python3 un_tester.py -p <id_contest>/<id_problema>
 
       Para copiar y pegar la plantilla:
-      python3 li_tester.py -g <destino> <nombre_programa>.<extension>
+      python3 un_tester.py -g <destino> <nombre_programa>.<extension>
    """
    size_args = len(sys.argv)
    if size_args > 4 or sys.argv[1] != "-p" and sys.argv[1] != "-t" and sys.argv[1] != "-g":
