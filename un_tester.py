@@ -10,6 +10,7 @@ import subprocess
 import requests
 from termcolor import colored
 from bs4 import BeautifulSoup
+from html.parser import HTMLParser
 
 
 def probar_solucion(programa):
@@ -56,7 +57,7 @@ def ruta_samples():
    return colocar_en
 
 
-def eliminar_archivos_de_entrada():
+def eliminar_todos_los_samples():
    directorio_entradas_salidas = os.path.join(ruta_samples())
    if not os.path.exists(directorio_entradas_salidas):
       os.makedirs(directorio_entradas_salidas)
@@ -65,33 +66,50 @@ def eliminar_archivos_de_entrada():
       subprocess.run(["rm", "-rf", archivos_txt])
 
 
-def extraer_subsecuencias(html_string):
-   subsecuencias = re.findall(r'<pre>(.*?)</pre>', html_string, re.DOTALL)
-   subsecuencias = [re.sub(r'<br/>', '\n', sub) for sub in subsecuencias]
-   resultado = ''.join(subsecuencias)
-   return resultado
-
-
 def obtener_input_answer(id_contest, id_problema):
-   eliminar_archivos_de_entrada()
-   url = f"https://codeforces.com/contest/{id_contest}/problem/{id_problema}"
-   response = requests.get(url)
-   if response.status_code == 200:
-      soup = BeautifulSoup(response.text, 'html.parser')
-      input_divs = soup.find_all('div', class_='input')
-      answer_divs = soup.find_all('div', class_='output')
+    eliminar_todos_los_samples()
+    url = f"https://codeforces.com/contest/{id_contest}/problem/{id_problema}"
+    respuesta = requests.get(url)
+    if respuesta.status_code == 200:
+        soup = BeautifulSoup(respuesta.text, 'html.parser')
+        input_divs = soup.find_all('div', class_='input')
+        answer_divs = soup.find_all('div', class_='output')
+        for i, (input_div, answer_div) in enumerate(zip(input_divs, answer_divs), start=1):
+            input_txt = formatear_captura(parsear_html(input_div))
+            answer_txt = formatear_captura(parsear_html(answer_div))
+            with open(f"{ruta_samples()}/in{i}.txt", "w") as input_file:
+               input_file.write(input_txt.strip())
+            print(colored(f"Test case {i} copiado ☑️", "yellow"))
+            with open(f"{ruta_samples()}/ans{i}.txt", "w") as answer_file:
+               answer_file.write(answer_txt.strip())
+            print(colored(f"Answer {i} copiado ☑️", "yellow"))
+    else:
+        print("Error fatal en:", colored(f"{url}", "red"))
 
-      for i, (input_div, answer_div) in enumerate(zip(input_divs, answer_divs), start=1):
-         input_text = extraer_subsecuencias(str(input_div.find('pre')))
-         answer_text = extraer_subsecuencias(str(answer_div.find('pre')))
-         with open(f"{ruta_samples()}/in{i}.txt", "w") as input_file:
-            input_file.write(input_text)
-         print(colored(f"Test case {i} copied ☑️", "yellow"))
-         with open(f"{ruta_samples()}/ans{i}.txt", "w") as answer_file:
-            answer_file.write(answer_text.strip())
-         print(colored(f"Answer {i} copied ☑️", "yellow"))
-   else:
-      print("Error fatal en:", colored(f"{url}", "red"))
+
+class HTMLContentParser(HTMLParser):
+   def __init__(self):
+      super().__init__()
+      self.output = []
+
+   def handle_data(self, data):
+      self.output.append(data)
+
+
+def parsear_html(html_content):
+   parser = HTMLContentParser()
+   parser.feed(str(html_content))
+   content = '\n'.join(parser.output)
+   return content
+
+
+def formatear_captura(captura):
+   captura = captura.strip().split("\n")
+   limpieza = []
+   for i in captura:
+      if i != "Input" and i != "Output" and i != "":
+         limpieza.append(i)
+   return '\n'.join(limpieza)
 
 
 def ejecutar_python(programa):
