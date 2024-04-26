@@ -72,7 +72,7 @@ def extraer_subsecuencias(html_string):
    return resultado
 
 
-def obtener_input_output(id_contest, id_problema):
+def obtener_input_answer(id_contest, id_problema):
    eliminar_archivos_de_entrada()
    url = f"https://codeforces.com/contest/{id_contest}/problem/{id_problema}"
    response = requests.get(url)
@@ -185,7 +185,7 @@ if __name__ == "__main__":
       probar_solucion(sys.argv[2])
    elif size_args == 3 and sys.argv[1] == "-p":
       id_contest, id_problema = sys.argv[2].split("/")
-      obtener_input_output(id_contest, id_problema)
+      obtener_input_answer(id_contest, id_problema)
    elif size_args == 4 and sys.argv[1] == "-g":
       destino = sys.argv[2]
       nombre, lenguaje = sys.argv[3].split(".")
