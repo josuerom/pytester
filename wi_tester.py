@@ -62,7 +62,7 @@ def eliminar_archivos_de_entrada():
       os.makedirs(directorio_entradas_salidas)
    else:
       archivos_txt = os.path.join(directorio_entradas_salidas, "*.txt")
-      subprocess.run(["rm", "-rf", archivos_txt])
+      subprocess.run(["del", archivos_txt])
 
 
 def extraer_subsecuencias(html_string):
