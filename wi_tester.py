@@ -1,6 +1,6 @@
 """
    author: josuerom
-   created: 25/04/24 09:11:04
+   created: 25/04/24 10:45:39
 """
 import os
 import re
@@ -16,12 +16,13 @@ def probar_solucion(programa):
    if programa.strip().endswith(".py"):
       ejecutar_python(programa)
    elif programa.strip().endswith(".cpp"):
-      compilar_y_ejecutar_cpp(programa)
+      compilar_ejecutar_cpp(programa)
    elif programa.strip().endswith(".java"):
       ejecutar_java(programa)
    else:
       extension = programa.split(".")[-1]
-      print(colored(f"No hay soporte para programas .{extension}", "magenta"))
+      print(colored(f"No hay soporte para programas .{extension}", "red"))
+      return
 
 
 def copiar_plantilla(destino, nombre, lenguaje):
@@ -61,7 +62,7 @@ def eliminar_archivos_de_entrada():
       os.makedirs(directorio_entradas_salidas)
    else:
       archivos_txt = os.path.join(directorio_entradas_salidas, "*.txt")
-      subprocess.run(["del", archivos_txt], shell=True)
+      subprocess.run(["rm", "-rf", archivos_txt])
 
 
 def extraer_subsecuencias(html_string):
@@ -84,7 +85,7 @@ def obtener_input_answer(id_contest, id_problema):
          input_text = extraer_subsecuencias(str(input_div.find('pre')))
          answer_text = extraer_subsecuencias(str(answer_div.find('pre')))
          with open(f"{ruta_samples()}/in{i}.txt", "w") as input_file:
-            input_file.write(input_text.strip())
+            input_file.write(input_text)
          print(colored(f"Test case {i} copied ☑️", "yellow"))
          with open(f"{ruta_samples()}/ans{i}.txt", "w") as answer_file:
             answer_file.write(answer_text.strip())
@@ -92,86 +93,85 @@ def obtener_input_answer(id_contest, id_problema):
    else:
       print("Error fatal en:", colored(f"{url}", "red"))
 
+
 def ejecutar_python(programa):
    for i in range(1, 11):
-      entrada_estandar = f"{ruta_samples()}\\in{i}.txt"
-      respuesta_correcta = f"{ruta_samples()}\\ans{i}.txt"
+      entrada_estandar = f"{ruta_samples()}/in{i}.txt"
+      salida_estandar = f"{ruta_samples()}/ans{i}.txt"
       if not os.path.exists(entrada_estandar):
          break
-      with open(entrada_estandar, "r") as contenido_archivo_de_entrada:
-         entrada_estandar_datos = contenido_archivo_de_entrada.read().strip()
-      proceso = subprocess.Popen(["python", programa], stdin=subprocess.PIPE, stdout=subprocess.PIPE,
+      with open(entrada_estandar, "r") as contenido_archivo_entrada:
+         input_txt = "".join(contenido_archivo_entrada.readlines())
+      proceso = subprocess.Popen(["python3", programa], stdin=subprocess.PIPE, stdout=subprocess.PIPE, 
                                  stderr=subprocess.PIPE, text=True)
-      salida_generada, _ = proceso.communicate(input=entrada_estandar_datos)
-      with open(respuesta_correcta, "r") as contenido_archivo_de_entrada:
-         salida_esperada = contenido_archivo_de_entrada.read().strip()
+      salida_generada, _ = proceso.communicate(input=input_txt)
+      with open(salida_estandar, "r") as contenido_archivo_respuesta:
+         salida_esperada = contenido_archivo_respuesta.read()
       if salida_generada.strip() == salida_esperada.strip():
          print(colored(f"Test case {i} passed ✅", "green"))
       else:
          print(colored(f"WA case {i}:", "red"))
-         print(f"Output:\n{salida_generada}", end="\n")
+         print(f"Output:\n{salida_generada}")
          print(f"Answer:\n{salida_esperada}")
 
 
-def compilar_y_ejecutar_cpp(programa):
-   def ejecutar_cpp(programa):
+def compilar_ejecutar_cpp(programa):
+   def ejecutar():
       for i in range(1, 11):
-         entrada_estandar = f"{ruta_samples()}\\in{i}.txt"
-         respuesta_correcta = f"{ruta_samples()}\\ans{i}.txt"
+         entrada_estandar = f"{ruta_samples()}/in{i}.txt"
+         salida_estandar = f"{ruta_samples()}/ans{i}.txt"
          if not os.path.exists(entrada_estandar):
-               break
-         with open(entrada_estandar, "r") as contenido_archivo_de_entrada:
-               entrada_estandar_datos = contenido_archivo_de_entrada.read().strip()
-         proceso = subprocess.Popen([f".\\{programa}"], stdin=subprocess.PIPE, stdout=subprocess.PIPE,
-                                    stderr=subprocess.PIPE, text=True)
-         salida_generada, _ = proceso.communicate(input=entrada_estandar_datos)
-         with open(respuesta_correcta, "r") as contenido_archivo_de_entrada:
-               salida_esperada = contenido_archivo_de_entrada.read().strip()
+            break
+         with open(entrada_estandar, "r") as contenido_archivo_entrada:
+            input_txt = "".join(contenido_archivo_entrada.readlines())
+         proceso = subprocess.Popen(["./sol"], stdin=subprocess.PIPE, stdout=subprocess.PIPE, 
+                                 stderr=subprocess.PIPE, text=True)
+         salida_generada, _ = proceso.communicate(input=input_txt)
+         with open(salida_estandar, "r") as contenido_archivo_respuesta:
+            salida_esperada = contenido_archivo_respuesta.read()
          if salida_generada.strip() == salida_esperada.strip():
-               print(colored(f"Test case {i} passed ✅", "green"))
+            print(colored(f"Test case {i} passed ✅", "green"))
          else:
-               print(colored(f"WA case {i}:", "red"))
-               print(f"Output:\n{salida_generada}", end="\n")
-               print(f"Answer:\n{salida_esperada}")
+            print(colored(f"WA case {i}:", "red"))
+            print(f"Output:\n{salida_generada}")
+            print(f"Answer:\n{salida_esperada}")
 
-
-   nombre_ejecutable = programa.replace(".cpp", "")
-   proceso_compilacion = subprocess.Popen(["g++ -std=c++17 -O2", programa, "-o", nombre_ejecutable],
-                                          stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+   proceso_compilacion = subprocess.Popen(["g++", "-std=c++17", "-O2", programa, "-o", "sol"],
+                                       stdout=subprocess.PIPE, stderr=subprocess.PIPE)
    _, salida_compilacion = proceso_compilacion.communicate()
    if proceso_compilacion.returncode == 0:
-      ejecutar_cpp(nombre_ejecutable)
+      ejecutar()
    else:
-      print(colored("Error de compilación:\n", "red"), salida_compilacion)
+      print(colored(f"Error de compilación:\n{salida_compilacion}", "red"))
 
 
 def ejecutar_java(programa):
    for i in range(1, 11):
-      entrada_estandar = f"{ruta_samples()}\\in{i}.txt"
-      respuesta_correcta = f"{ruta_samples()}\\ans{i}.txt"
+      entrada_estandar = f"{ruta_samples()}/in{i}.txt"
+      salida_estandar = f"{ruta_samples()}/ans{i}.txt"
       if not os.path.exists(entrada_estandar):
          break
-      with open(entrada_estandar, "r") as contenido_archivo_de_entrada:
-         entrada_estandar_datos = contenido_archivo_de_entrada.read().strip()
-      proceso = subprocess.Popen(["java", programa], stdin=subprocess.PIPE, stdout=subprocess.PIPE,
+      with open(entrada_estandar, "r") as contenido_archivo_entrada:
+         input_txt = "".join(contenido_archivo_entrada.readlines())
+      proceso = subprocess.Popen(["java", programa], stdin=subprocess.PIPE, stdout=subprocess.PIPE, 
                                  stderr=subprocess.PIPE, text=True)
-      salida_generada, _ = proceso.communicate(input=entrada_estandar_datos)
-      with open(respuesta_correcta, "r") as contenido_archivo_de_entrada:
-         salida_esperada = contenido_archivo_de_entrada.read().strip()
+      salida_generada, _ = proceso.communicate(input=input_txt)
+      with open(salida_estandar, "r") as contenido_archivo_respuesta:
+         salida_esperada = contenido_archivo_respuesta.read()
       if salida_generada.strip() == salida_esperada.strip():
          print(colored(f"Test case {i} passed ✅", "green"))
       else:
          print(colored(f"WA case {i}:", "red"))
-         print(f"Output:\n{salida_generada}", end="\n")
+         print(f"Output:\n{salida_generada}")
          print(f"Answer:\n{salida_esperada}")
 
 
 if __name__ == "__main__":
    """En Windows
-      Para verificar todos los caso de prueba:
+      Para verificar todos los casos de prueba:
       python wi_tester.py -t <programa>
-
-      Para obtener los casos de prueba con las salidas:
+   
+      Para obtener los casos de prueba con las salidad:
       python wi_tester.py -p <id_contest>/<id_problema>
 
       Para copiar y pegar la plantilla:
@@ -179,7 +179,7 @@ if __name__ == "__main__":
    """
    size_args = len(sys.argv)
    if size_args > 4 or sys.argv[1] != "-p" and sys.argv[1] != "-t" and sys.argv[1] != "-g":
-      print(colored("Mijito/a instrucción invalida!", "red"))
+      print(colored("Mijito/a instrucción invalida!", "red"), str(sys.argv))
    elif size_args == 3 and sys.argv[1] == "-t":
       probar_solucion(sys.argv[2])
    elif size_args == 3 and sys.argv[1] == "-p":
@@ -189,3 +189,5 @@ if __name__ == "__main__":
       destino = sys.argv[2]
       nombre, lenguaje = sys.argv[3].split(".")
       copiar_plantilla(destino, nombre, lenguaje.lower())
+   else:
+      print(colored("Mijito/a instrucción invalida!", "red"), str(sys.argv))
