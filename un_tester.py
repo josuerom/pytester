@@ -85,7 +85,7 @@ def obtener_input_answer(id_contest, id_problema):
          input_text = extraer_subsecuencias(str(input_div.find('pre')))
          answer_text = extraer_subsecuencias(str(answer_div.find('pre')))
          with open(f"{ruta_samples()}/in{i}.txt", "w") as input_file:
-            input_file.write(input_text.strip())
+            input_file.write(input_text)
          print(colored(f"Test case {i} copied ☑️", "yellow"))
          with open(f"{ruta_samples()}/ans{i}.txt", "w") as answer_file:
             answer_file.write(answer_text.strip())
@@ -97,16 +97,16 @@ def obtener_input_answer(id_contest, id_problema):
 def ejecutar_python(programa):
    for i in range(1, 11):
       entrada_estandar = f"{ruta_samples()}/in{i}.txt"
-      respuesta_correcta = f"{ruta_samples()}/ans{i}.txt"
+      salida_estandar = f"{ruta_samples()}/ans{i}.txt"
       if not os.path.exists(entrada_estandar):
          break
-      with open(entrada_estandar, "r") as contenido_archivo_de_entrada:
-         entrada_estandar_datos = contenido_archivo_de_entrada.read().strip()
+      with open(entrada_estandar, "r") as contenido_archivo_entrada:
+         input_txt = "".join(contenido_archivo_entrada.readlines())
       proceso = subprocess.Popen(["python3", programa], stdin=subprocess.PIPE, stdout=subprocess.PIPE, 
                                  stderr=subprocess.PIPE, text=True)
-      salida_generada, _ = proceso.communicate(input=entrada_estandar_datos)
-      with open(respuesta_correcta, "r") as contenido_archivo_de_entrada:
-         salida_esperada = contenido_archivo_de_entrada.read().strip()
+      salida_generada, _ = proceso.communicate(input=input_txt)
+      with open(salida_estandar, "r") as contenido_archivo_respuesta:
+         salida_esperada = contenido_archivo_respuesta.read()
       if salida_generada.strip() == salida_esperada.strip():
          print(colored(f"Test case {i} passed ✅", "green"))
       else:
@@ -180,7 +180,7 @@ if __name__ == "__main__":
    """
    size_args = len(sys.argv)
    if size_args > 4 or sys.argv[1] != "-p" and sys.argv[1] != "-t" and sys.argv[1] != "-g":
-      print(colored("Mijito/a instrucción invalida!", "red"))
+      print(colored("Mijito/a instrucción invalida!", "red"), str(sys.argv))
    elif size_args == 3 and sys.argv[1] == "-t":
       probar_solucion(sys.argv[2])
    elif size_args == 3 and sys.argv[1] == "-p":
