@@ -11,7 +11,7 @@ from termcolor import colored
 from bs4 import BeautifulSoup
 
 
-def main(programa):
+def probar_solucion(programa):
    if programa.strip().endswith(".py"):
       ejecutar_python(programa)
    elif programa.strip().endswith(".cpp"):
@@ -173,7 +173,7 @@ if __name__ == "__main__":
    if size_args > 4 or sys.argv[1] != "-p" and sys.argv[1] != "-t" and sys.argv[1] != "-g":
       print(colored("Mijito/a instrucción invalida!", "red"))
    elif size_args == 3 and sys.argv[1] == "-t":
-      main(sys.argv[2])
+      probar_solucion(sys.argv[2])
    elif size_args == 3 and sys.argv[1] == "-p":
       id_contest, id_problema = sys.argv[2].split("/")
       obtener_input_output(id_contest, id_problema)
