@@ -11,7 +11,7 @@ from termcolor import colored
 from bs4 import BeautifulSoup
 
 
-def main(programa):
+def probar_solucion(programa):
    if programa.strip().endswith(".py"):
       ejecutar_python(programa)
    elif programa.strip().endswith(".cpp"):
@@ -23,7 +23,8 @@ def main(programa):
       print(colored(f"No hay soporte para programas .{extension}", "magenta"))
       return
 
-def copiar_plantilla(lenguaje, destino, nombre):
+
+def copiar_plantilla(destino, nombre, lenguaje):
    origen = f"/home/josuerom/Workspace/contest/TEMPLATES"
    if lenguaje == "cpp":
       ruta_origen = os.path.join(origen, "template.cpp")
@@ -38,7 +39,15 @@ def copiar_plantilla(lenguaje, destino, nombre):
    if not os.path.exists(destino):
       os.makedirs(destino)
    shutil.copyfile(ruta_origen, ruta_destino)
-   print(colored(f"Plantilla copiada con éxito.", "green"))
+   if lenguaje == "java":
+      with open(ruta_destino, 'r') as plantilla:
+         lineas = plantilla.readlines()
+      with open(ruta_destino, 'w') as plantilla:
+         for linea in lineas:
+            if linea.strip().startswith("public class"):
+               linea = "public class " + nombre + " {\n"
+            plantilla.write(linea)
+   print(colored(f"Plantilla creada con éxito.", "green"))
 
 
 def ruta_samples():
@@ -154,21 +163,23 @@ def ejecutar_java(programa):
 if __name__ == "__main__":
    """En Linux
       Para verificar todos los caso de prueba:
-      python3 li_test.py -t <programa>
+      python3 li_tester.py -t <programa>
    
       Para obtener los casos de prueba del problema:
-      python3 li_test.py -p <id_contest>/<id_problema>
+      python3 li_tester.py -p <id_contest>/<id_problema>
 
       Para copiar y pegar la plantilla:
-      python3 li_test.py -g <lenguaje> <destino> <nombre_programa>
+      python3 li_tester.py -g <destino> <nombre_programa>.<extension>
    """
-   if sys.argv[1] != "-p" and sys.argv[1] != "-t" and sys.argv[1] != "-g":
+   size_args = len(sys.argv)
+   if size_args > 4 or sys.argv[1] != "-p" and sys.argv[1] != "-t" and sys.argv[1] != "-g":
       print(colored("Mijito/a instrucción invalida!", "red"))
-   elif len(sys.argv) == 3 and sys.argv[1] == "-t":
-      main(sys.argv[2])
-   elif len(sys.argv) == 3 and sys.argv[1] == "-p":
+   elif size_args == 3 and sys.argv[1] == "-t":
+      probar_solucion(sys.argv[2])
+   elif size_args == 3 and sys.argv[1] == "-p":
       id_contest, id_problema = sys.argv[2].split("/")
       obtener_input_output(id_contest, id_problema)
-   elif len(sys.argv) == 5 and sys.argv[1] == "-g":
-      lenguaje, destino, nombre = sys.argv[2], sys.argv[3], sys.argv[4]
-      copiar_plantilla(lenguaje, destino, nombre)
+   elif size_args == 4 and sys.argv[1] == "-g":
+      destino = sys.argv[2]
+      nombre, lenguaje = sys.argv[3].split(".")
+      copiar_plantilla(destino, nombre, lenguaje.lower())
