@@ -22,7 +22,7 @@ def probar_solucion(programa):
       ejecutar_java(programa)
    else:
       extension = programa.split(".")[-1]
-      print(colored(f"No hay soporte para programas .{extension}", "red"))
+      print(colored(f"No hay soporte para programas [.{extension}]", "red"))
 
 
 def copiar_plantilla(destino, nombre, lenguaje):
