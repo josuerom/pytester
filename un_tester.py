@@ -106,7 +106,8 @@ def formatear_captura(captura):
    captura = captura.strip().split("\n")
    limpieza = []
    for i in range(len(captura) - 1):
-      if captura[i] != "Input" and captura[i] != "Output" and captura[i] != "" and i < 3:
+      captura[i].strip()
+      if captura[i] != "Input" and captura[i] != "Output" and captura[i] == True and i < 3:
          limpieza.append(i)
    return '\n'.join(limpieza)
 
