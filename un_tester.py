@@ -5,6 +5,7 @@
 import os
 import sys
 import shutil
+import webbrowser
 import subprocess
 import requests
 from termcolor import colored
@@ -22,17 +23,15 @@ def probar_solucion(programa):
    else:
       extension = programa.split(".")[-1]
       print(colored(f"No hay soporte para programas .{extension}", "red"))
-      return
 
 
 def copiar_plantilla(destino, nombre, lenguaje):
-   origen = f"/home/josuerom/Workspace/contest/TEMPLATES"
    if lenguaje == "cpp":
-      ruta_origen = os.path.join(origen, "template.cpp")
+      ruta_origen = os.path.join("/home/josuerom/Workspace/contest/TEMPLATES/template.cpp")
    elif lenguaje == "java":
-      ruta_origen = os.path.join(origen, "template.java")
+      ruta_origen = os.path.join("/home/josuerom/Workspace/contest/TEMPLATES/template.java")
    elif lenguaje == "py":
-      ruta_origen = os.path.join(origen, "template.py")
+      ruta_origen = os.path.join("/home/josuerom/Workspace/contest/TEMPLATES/template.py")
    else:
       print(colored(f"No existe plantilla para .{lenguaje}", "red"))
       return
@@ -65,9 +64,9 @@ def eliminar_todos_los_samples():
       subprocess.run(["rm", "-rf", archivos_txt])
 
 
-def obtener_input_answer(id_contest, id_problema):
+def obtener_input_answer(concurso, problema):
     eliminar_todos_los_samples()
-    url = f"https://codeforces.com/contest/{id_contest}/problem/{id_problema}"
+    url = f"https://codeforces.com/contest/{concurso}/problem/{problema}"
     respuesta = requests.get(url)
     if respuesta.status_code == 200:
         soup = BeautifulSoup(respuesta.text, 'html.parser')
@@ -110,6 +109,15 @@ def formatear_captura(captura):
       if linea != "Input" and linea != "Output" and linea == True and i < 3:
          limpieza.append(linea)
    return '\n'.join(limpieza)
+
+
+def pegar_solucion(concurso, problema):
+   url = f"https://codeforces.com/contest/{concurso}/submit/{problema}"
+   respuesta = requests.head(url)
+   if respuesta.status_code == 200:
+      webbrowser.get('firefox').open_new_tab(url)
+   else:
+      print(colored(f"La URL no existe: {url}", "red"))
 
 
 def ejecutar_python(programa):
@@ -191,22 +199,28 @@ if __name__ == "__main__":
       python3 un_tester.py -t <programa>
    
       Para obtener los casos de prueba con las salidad:
-      python3 un_tester.py -p <id_contest>/<id_problema>
+      python3 un_tester.py -p <id concurso>/<id problema>
 
       Para copiar y pegar la plantilla:
-      python3 un_tester.py -g <destino> <nombre_programa>.<extension>
+      python3 un_tester.py -g <destino> <nombre programa>.<extension>
+      
+      Para pegar la solución construida:
+      python3 un_tester.py -s <id concurso>/<id problema>
    """
    size_args = len(sys.argv)
-   if size_args > 4 or sys.argv[1] != "-p" and sys.argv[1] != "-t" and sys.argv[1] != "-g":
+   if size_args > 4 or sys.argv[1] != "-p" and sys.argv[1] != "-t" and sys.argv[1] != "-g" and sys.argv[1] != "-s":
       print(colored("Mijito/a instrucción invalida!", "red"), str(sys.argv))
    elif size_args == 3 and sys.argv[1] == "-t":
       probar_solucion(sys.argv[2])
    elif size_args == 3 and sys.argv[1] == "-p":
-      id_contest, id_problema = sys.argv[2].split("/")
-      obtener_input_answer(id_contest, id_problema)
+      concurso, problema = sys.argv[2].split("/")
+      obtener_input_answer(concurso, problema)
    elif size_args == 4 and sys.argv[1] == "-g":
       destino = sys.argv[2]
       nombre, lenguaje = sys.argv[3].split(".")
       copiar_plantilla(destino, nombre, lenguaje.lower())
+   elif size_args == 3 and sys.argv[1] == "-s":
+      concurso, problema = sys.argv[2].split("/")
+      pegar_solucion(concurso, problema.lower())
    else:
-      print(colored("Mijito/a instrucción invalida!", "red"), str(sys.argv))
+      print(colored("Error fatal", "red"))
