@@ -26,23 +26,24 @@ def probar_solucion(programa):
 
 
 def copiar_plantilla(destino, nombre, lenguaje):
+   plantilla_cpp, plantilla_java, plantilla_py = "template.cpp", "template.java", "template.py"
    if lenguaje == "cpp":
-      ruta_origen = os.path.join("/home/josuerom/Workspace/contest/TEMPLATES/template.cpp")
+      origen_plantilla = os.path.join(ruta_plantillas(), plantilla_cpp)
    elif lenguaje == "java":
-      ruta_origen = os.path.join("/home/josuerom/Workspace/contest/TEMPLATES/template.java")
+      origen_plantilla = os.path.join(ruta_plantillas(), plantilla_java)
    elif lenguaje == "py":
-      ruta_origen = os.path.join("/home/josuerom/Workspace/contest/TEMPLATES/template.py")
+      origen_plantilla = os.path.join(ruta_plantillas(), plantilla_py)
    else:
       print(colored(f"No existe plantilla para .{lenguaje}", "red"))
       return
-   ruta_destino = os.path.join(destino, f"{nombre}.{lenguaje}")
+   ubicacion_destino = os.path.join(destino, f"{nombre}.{lenguaje}")
    if not os.path.exists(destino):
       os.makedirs(destino)
-   shutil.copyfile(ruta_origen, ruta_destino)
+   shutil.copyfile(origen_plantilla, ubicacion_destino)
    if lenguaje == "java":
-      with open(ruta_destino, 'r') as plantilla:
+      with open(ubicacion_destino, 'r') as plantilla:
          lineas = plantilla.readlines()
-      with open(ruta_destino, 'w') as plantilla:
+      with open(ubicacion_destino, 'w') as plantilla:
          for linea in lineas:
             if linea.strip().startswith("public class"):
                linea = "public class " + nombre + " {\n"
@@ -50,22 +51,25 @@ def copiar_plantilla(destino, nombre, lenguaje):
    print(colored(f"Plantilla creada con éxito.", "green"))
 
 
-def ruta_samples():
-   colocar_en = f"/home/josuerom/Workspace/codeforces/src/samples"
-   return colocar_en
+def ruta_plantillas():
+   return f"/home/josuerom/Workspace/contest/templates"
 
 
-def eliminar_todos_los_samples():
-   directorio_entradas_salidas = os.path.join(ruta_samples())
-   if not os.path.exists(directorio_entradas_salidas):
-      os.makedirs(directorio_entradas_salidas)
+def ruta_archivos_de_entrada():
+   return f"/home/josuerom/Workspace/codeforces/src/samples"
+
+
+def borrar_casos_de_prueba():
+   directorio_entradas_respuestas = os.path.join(ruta_archivos_de_entrada())
+   if not os.path.exists(directorio_entradas_respuestas):
+      os.makedirs(directorio_entradas_respuestas)
    else:
-      archivos_txt = os.path.join(directorio_entradas_salidas, "*.txt")
+      archivos_txt = os.path.join(directorio_entradas_respuestas, "*.txt")
       subprocess.run(["rm", "-rf", archivos_txt])
 
 
 def obtener_input_answer(concurso, problema):
-    eliminar_todos_los_samples()
+    borrar_casos_de_prueba()
     url = f"https://codeforces.com/contest/{concurso}/problem/{problema}"
     respuesta = requests.get(url)
     if respuesta.status_code == 200:
@@ -75,10 +79,10 @@ def obtener_input_answer(concurso, problema):
         for i, (input_div, answer_div) in enumerate(zip(input_divs, answer_divs), start=1):
             input_txt = formatear_captura(parsear_html(input_div))
             answer_txt = formatear_captura(parsear_html(answer_div))
-            with open(f"{ruta_samples()}/in{i}.txt", "w") as input_file:
+            with open(f"{ruta_archivos_de_entrada()}/in{i}.txt", "w") as input_file:
                input_file.write(input_txt.strip())
             print(colored(f"Test case {i} copiado ☑️", "yellow"))
-            with open(f"{ruta_samples()}/ans{i}.txt", "w") as answer_file:
+            with open(f"{ruta_archivos_de_entrada()}/ans{i}.txt", "w") as answer_file:
                answer_file.write(answer_txt.strip())
             print(colored(f"Answer {i} copiado ☑️", "yellow"))
     else:
@@ -106,24 +110,27 @@ def formatear_captura(captura):
    limpieza = []
    for i in range(len(captura) - 1):
       linea = captura[i].strip()
-      if linea != "Input" and linea != "Output" and linea == True and i < 3:
+      if len(limpieza) > 0 and linea == "":
+         limpieza.append(linea)
+         continue
+      if linea != "Input" and linea != "Output" and linea == True:
          limpieza.append(linea)
    return '\n'.join(limpieza)
 
 
-def pegar_solucion(concurso, problema):
+def pegar_posible_solucion(concurso, problema):
    url = f"https://codeforces.com/contest/{concurso}/submit/{problema}"
    respuesta = requests.head(url)
    if respuesta.status_code == 200:
       webbrowser.get('firefox').open_new_tab(url)
    else:
-      print(colored(f"La URL no existe: {url}", "red"))
+      print(colored(f"La URL no existe:", "red"), url)
 
 
 def ejecutar_python(programa):
    for i in range(1, 11):
-      entrada_estandar = f"{ruta_samples()}/in{i}.txt"
-      salida_estandar = f"{ruta_samples()}/ans{i}.txt"
+      entrada_estandar = f"{ruta_archivos_de_entrada()}/in{i}.txt"
+      respuesta = f"{ruta_archivos_de_entrada()}/ans{i}.txt"
       if not os.path.exists(entrada_estandar):
          break
       with open(entrada_estandar, "r") as contenido_archivo_entrada:
@@ -131,7 +138,7 @@ def ejecutar_python(programa):
       proceso = subprocess.Popen(["python3", "-OO", "-S", "-B", programa], stdin=subprocess.PIPE, stdout=subprocess.PIPE, 
                                  stderr=subprocess.PIPE, text=True)
       salida_generada, _ = proceso.communicate(input=input_txt)
-      with open(salida_estandar, "r") as contenido_archivo_respuesta:
+      with open(respuesta, "r") as contenido_archivo_respuesta:
          salida_esperada = contenido_archivo_respuesta.read()
       if salida_generada.strip() == salida_esperada.strip():
          print(colored(f"Test case {i} passed ✅", "green"))
@@ -144,8 +151,8 @@ def ejecutar_python(programa):
 def compilar_ejecutar_cpp(programa):
    def ejecutar():
       for i in range(1, 11):
-         entrada_estandar = f"{ruta_samples()}/in{i}.txt"
-         salida_estandar = f"{ruta_samples()}/ans{i}.txt"
+         entrada_estandar = f"{ruta_archivos_de_entrada()}/in{i}.txt"
+         respuesta = f"{ruta_archivos_de_entrada()}/ans{i}.txt"
          if not os.path.exists(entrada_estandar):
             break
          with open(entrada_estandar, "r") as contenido_archivo_entrada:
@@ -153,7 +160,7 @@ def compilar_ejecutar_cpp(programa):
          proceso = subprocess.Popen(["./sol"], stdin=subprocess.PIPE, stdout=subprocess.PIPE, 
                                  stderr=subprocess.PIPE, text=True)
          salida_generada, _ = proceso.communicate(input=input_txt)
-         with open(salida_estandar, "r") as contenido_archivo_respuesta:
+         with open(respuesta, "r") as contenido_archivo_respuesta:
             salida_esperada = contenido_archivo_respuesta.read()
          if salida_generada.strip() == salida_esperada.strip():
             print(colored(f"Test case {i} passed ✅", "green"))
@@ -162,20 +169,20 @@ def compilar_ejecutar_cpp(programa):
             print(f"Output:\n{salida_generada}")
             print(f"Answer:\n{salida_esperada}")
 
-   
+
    proceso_compilacion = subprocess.Popen(["g++", "-std=c++17", "-O2", programa, "-o", "sol"],
                                        stdout=subprocess.PIPE, stderr=subprocess.PIPE)
    _, salida_compilacion = proceso_compilacion.communicate()
    if proceso_compilacion.returncode == 0:
       ejecutar()
    else:
-      print(colored(f"Error de compilación:\n{salida_compilacion}", "red"))
+      print(colored(f"Error de compilación:", "red"), salida_compilacion, end="\n")
 
 
 def ejecutar_java(programa):
    for i in range(1, 11):
-      entrada_estandar = f"{ruta_samples()}/in{i}.txt"
-      salida_estandar = f"{ruta_samples()}/ans{i}.txt"
+      entrada_estandar = f"{ruta_archivos_de_entrada()}/in{i}.txt"
+      respuesta = f"{ruta_archivos_de_entrada()}/ans{i}.txt"
       if not os.path.exists(entrada_estandar):
          break
       with open(entrada_estandar, "r") as contenido_archivo_entrada:
@@ -183,7 +190,7 @@ def ejecutar_java(programa):
       proceso = subprocess.Popen(["java", programa], stdin=subprocess.PIPE, stdout=subprocess.PIPE, 
                                  stderr=subprocess.PIPE, text=True)
       salida_generada, _ = proceso.communicate(input=input_txt)
-      with open(salida_estandar, "r") as contenido_archivo_respuesta:
+      with open(respuesta, "r") as contenido_archivo_respuesta:
          salida_esperada = contenido_archivo_respuesta.read()
       if salida_generada.strip() == salida_esperada.strip():
          print(colored(f"Test case {i} passed ✅", "green"))
@@ -194,17 +201,17 @@ def ejecutar_java(programa):
 
 
 if __name__ == "__main__":
-   """En Unix (MacOS - Linux)
-      Para verificar todos los casos de prueba:
-      python3 un_tester.py -t <programa>
-   
-      Para obtener los casos de prueba con las salidad:
+   """En (MacOS & Linux)
+      Para copiar y pegar una plantilla:
+      python3 un_tester.py -g <destino> <nombre programa>.<extension>
+
+      Para obtener los casos de prueba con las salidas:
       python3 un_tester.py -p <id concurso>/<id problema>
 
-      Para copiar y pegar la plantilla:
-      python3 un_tester.py -g <destino> <nombre programa>.<extension>
-      
-      Para pegar la solución construida:
+      Para verificar solución con todos los casos de prueba:
+      python3 un_tester.py -t <programa>
+
+      Para pegar la posible solución en la página:
       python3 un_tester.py -s <id concurso>/<id problema>
    """
    size_args = len(sys.argv)
@@ -221,6 +228,6 @@ if __name__ == "__main__":
       copiar_plantilla(destino, nombre, lenguaje.lower())
    elif size_args == 3 and sys.argv[1] == "-s":
       concurso, problema = sys.argv[2].split("/")
-      pegar_solucion(concurso, problema.lower())
+      pegar_posible_solucion(concurso, problema.lower())
    else:
-      print(colored("Error fatal", "red"))
+      print(colored(f"Error fatal en:", "red"), sys.argv)
