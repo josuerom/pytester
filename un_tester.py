@@ -103,7 +103,7 @@ def parsear_html(html_content):
 
 
 def formatear_captura(captura):
-   captura = captura.strip().split("\n")
+   captura = captura.split("\n")
    limpieza = []
    for i in range(len(captura) - 1):
       linea = captura[i].strip()
