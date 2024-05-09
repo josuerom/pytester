@@ -34,7 +34,7 @@ def copiar_plantilla(destino, nombre, lenguaje):
    elif lenguaje == "py":
       origen_plantilla = os.path.join(ruta_plantillas(), plantilla_py)
    else:
-      print(colored(f"No existe plantilla para .{lenguaje}", "red"))
+      print(colored(f"No existe plantilla para [.{lenguaje}]", "red"))
       return
    ubicacion_destino = os.path.join(destino, f"{nombre}.{lenguaje}")
    if not os.path.exists(destino):
@@ -59,34 +59,30 @@ def ruta_archivos_de_entrada():
    return f"d:\\workspace\\codeforces\\src\\samples"
 
 
-def borrar_casos_de_prueba():
+def obtener_input_answer(concurso, problema):
    directorio_entradas_respuestas = os.path.join(ruta_archivos_de_entrada())
    if not os.path.exists(directorio_entradas_respuestas):
       os.makedirs(directorio_entradas_respuestas)
    else:
       archivos_txt = os.path.join(directorio_entradas_respuestas, "*.txt")
       subprocess.run(["del", archivos_txt])
-
-
-def obtener_input_answer(concurso, problema):
-    borrar_casos_de_prueba()
-    url = f"https://codeforces.com/contest/{concurso}/problem/{problema}"
-    respuesta = requests.get(url)
-    if respuesta.status_code == 200:
-        soup = BeautifulSoup(respuesta.text, 'html.parser')
-        input_divs = soup.find_all('div', class_='input')
-        answer_divs = soup.find_all('div', class_='output')
-        for i, (input_div, answer_div) in enumerate(zip(input_divs, answer_divs), start=1):
-            input_txt = formatear_captura(parsear_html(input_div))
-            answer_txt = formatear_captura(parsear_html(answer_div))
-            with open(f"{ruta_archivos_de_entrada()}/in{i}.txt", "w") as input_file:
-               input_file.write(input_txt.strip())
-            print(colored(f"Test case {i} copiado ☑️", "yellow"))
-            with open(f"{ruta_archivos_de_entrada()}/ans{i}.txt", "w") as answer_file:
-               answer_file.write(answer_txt.strip())
-            print(colored(f"Answer {i} copiado ☑️", "yellow"))
-    else:
-        print("Error fatal en:", colored(f"{url}", "red"))
+   url = f"https://codeforces.com/contest/{concurso}/problem/{problema}"
+   respuesta = requests.get(url)
+   if respuesta.status_code == 200:
+      soup = BeautifulSoup(respuesta.text, 'html.parser')
+      input_divs = soup.find_all('div', class_='input')
+      answer_divs = soup.find_all('div', class_='output')
+      for i, (input_div, answer_div) in enumerate(zip(input_divs, answer_divs), start=1):
+         input_txt = formatear_captura(parsear_html(input_div))
+         answer_txt = formatear_captura(parsear_html(answer_div))
+         with open(f"{ruta_archivos_de_entrada()}/in{i}.txt", "w") as input_file:
+            input_file.write(input_txt.strip())
+         print(colored(f"Test case {i} copiado ☑️", "yellow"))
+         with open(f"{ruta_archivos_de_entrada()}/ans{i}.txt", "w") as answer_file:
+            answer_file.write(answer_txt.strip())
+         print(colored(f"Answer {i} copiado ☑️", "yellow"))
+   else:
+      print("Error fatal en:", colored(f"{url}", "red"))
 
 
 class HTMLContentParser(HTMLParser):
@@ -157,7 +153,7 @@ def compilar_ejecutar_cpp(programa):
             break
          with open(entrada_estandar, "r") as contenido_archivo_entrada:
             input_txt = "".join(contenido_archivo_entrada.readlines())
-         proceso = subprocess.Popen(["./sol"], stdin=subprocess.PIPE, stdout=subprocess.PIPE, 
+         proceso = subprocess.Popen(["d:\\workspace\\bin\\test.exe"], stdin=subprocess.PIPE, stdout=subprocess.PIPE, 
                                  stderr=subprocess.PIPE, text=True)
          salida_generada, _ = proceso.communicate(input=input_txt)
          with open(respuesta, "r") as contenido_archivo_respuesta:
@@ -169,8 +165,7 @@ def compilar_ejecutar_cpp(programa):
             print(f"Output:\n{salida_generada}")
             print(f"Answer:\n{salida_esperada}")
 
-
-   proceso_compilacion = subprocess.Popen(["g++", "-std=c++17", "-O2", programa, "-o", "sol"],
+   proceso_compilacion = subprocess.Popen(["g++", "-std=c++17", "-O2", programa, "-o", "d:\\workspace\\bin\\test.exe"],
                                        stdout=subprocess.PIPE, stderr=subprocess.PIPE)
    _, salida_compilacion = proceso_compilacion.communicate()
    if proceso_compilacion.returncode == 0:
@@ -211,7 +206,7 @@ if __name__ == "__main__":
       Para verificar solución con todos los casos de prueba:
       python wi_tester.py -t <programa>
 
-      Para pegar la posible solución en la página:
+      Para pegar la posible solución en codeforces:
       python wi_tester.py -s <id concurso>/<id problema>
    """
    size_args = len(sys.argv)
