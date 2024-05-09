@@ -117,7 +117,7 @@ def pegar_posible_solucion(concurso, problema):
    url = f"https://codeforces.com/contest/{concurso}/submit/{problema}"
    respuesta = requests.head(url)
    if respuesta.status_code == 200:
-      webbrowser.get('firefox').open_new_tab(url)
+      webbrowser.open(url)
    else:
       print(colored(f"La URL no existe:", "red"), url)
 
