@@ -52,7 +52,7 @@ def copiar_plantilla(destino, nombre, lenguaje):
 
 
 def ruta_plantillas():
-   return f"/home/josuerom/Workspace/contest/templates"
+   return f"/home/josuerom/Workspace/contest/TEMPLATES"
 
 
 def ruta_archivos_de_entrada():
