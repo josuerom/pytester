@@ -65,7 +65,8 @@ def obtener_input_answer(concurso, problema):
       os.makedirs(directorio_entradas_respuestas)
    else:
       archivos_txt = os.path.join(directorio_entradas_respuestas, "*.txt")
-      subprocess.run(["rm", "-rf", archivos_txt])    url = f"https://codeforces.com/contest/{concurso}/problem/{problema}"
+      subprocess.run(["rm", "-rf", archivos_txt])
+   url = f"https://codeforces.com/contest/{concurso}/problem/{problema}"
    respuesta = requests.get(url)
    if respuesta.status_code == 200:
       soup = BeautifulSoup(respuesta.text, 'html.parser')
