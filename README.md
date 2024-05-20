@@ -21,7 +21,7 @@ pyinstaller --onefile wi_tester.py
 
 Ahora, debes agregar la ruta en donde se encuentre el ejecutable `build\wi_tester.exe` al PATH (Variables de entorno), por ejemplo al PATH: `%HOMEPATH%\pytester\build`, para que cuando escribas el nombre del ejecutable desde cualquier parte dentro de la terminal lo pueda reconocer como un comando, y así mantener una mayor velocidad.
 
-### En Linux
+### En Linux & MacOS
 Ejecuta todas estas instrucciones dentro de la carpeta que contiene el modulo.py
 
 Primero se crea un entorno virtual para poder instalar el paquete, luego se instala el paquete para el proyecto
