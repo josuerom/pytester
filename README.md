@@ -1,14 +1,14 @@
 # pytester
-Testeador, parseador y generador de plantillas para programas escritos en los lenguajes de programación C++, Java y Python. Estas herramientas están especialmente diseñadas para abordar problemas directos en la plataforma [codeforces](https://codeforces.com/problemset) de manera ligera.
+Testeador, parseador y generador de plantillas para programas escritos en los lenguajes de programación C++, Java y Python. Estas herramientas están especialmente diseñadas para abordar problemas directos en la plataforma [codeforces](https://codeforces.com/problemset) de manera ágil.
 
-Para que estas automatizaciones funcionen correctamente, se necesita de: `pip install requests beautifulsoup4 termcolor`
+Para que estas automatizaciones funcionen correctamente, debe instalar los tres paquetes de terceros: `pip install requests beautifulsoup4 termcolor`
 
-Solo debe modificar las líneas `29`, `55`, `59`, `168` y `156`. Además, si es que no tiene una carpeta en donde tenga las plantillas, entonces deberá crearla.
+## Lo que debe hacer
+Modifique las líneas `29`, `55`, `59`, `168` y `156` según sus necesidades. Además, si es que no tiene una carpeta en donde tenga las plantillas, entonces deberá crearla.
 
-Luego de haber modificado el programa y te esté funcionando correctamente, entonces ⤵️
+Luego de haber modificado el programa y le esté funcionando el programa correctamente, entonces ⤵️
 
 ## Convierte el modulo a un ejecutable
-
 ### En Windows
 Instala el paquete
 ```python
