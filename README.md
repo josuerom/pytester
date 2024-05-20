@@ -26,8 +26,8 @@ Ejecuta todas estas instrucciones dentro de la carpeta que contiene el modulo.py
 
 Primero se crea un entorno virtual para poder instalar el paquete, luego se instala el paquete para el proyecto
 ```python
-python3 -m venv venv
-source venv/bin/activate
+python3 -m venv env
+source env/bin/activate
 pip install pyinstaller
 ```
 Ahora se realiza la conversión a ejecutable para linux `/build/un_tester`
