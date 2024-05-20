@@ -19,8 +19,7 @@ Ejecuta la instrucción con el nombre del modulo.py, en la misma ubicación que 
 pyinstaller --onefile wi_tester.py
 ```
 
-Ahora, debes agregar la ruta en donde se encuentre el ejecutable `build\wi_tester.exe` al PATH (Variables de entorno), para que cuando escribas el nombre del ejecutable desde cualquier
-ubicación en la terminal lo pueda reconocer como un comando, y así mantener mayor velocidad.
+Ahora, debes agregar la ruta en donde se encuentre el ejecutable `build\wi_tester.exe` al PATH (Variables de entorno), por ejemplo al PATH: `%HOMEPATH%\pytester\build`, para que cuando escribas el nombre del ejecutable desde cualquier parte dentro de la terminal lo pueda reconocer como un comando, y así mantener una mayor velocidad.
 
 ### En Linux
 Ejecuta todas estas instrucciones dentro de la carpeta que contiene el modulo.py
@@ -41,4 +40,5 @@ Ahora, debes mover el archivo ejecutable al directorio de binarios y concederle 
 sudo mv build/un_tester /usr/bin
 sudo chmod +x /usr/bin/un_tester
 ```
-Una vez haya hecho esto y haya salido bien, entonces puede invocar al ejecutable desde cualquier parte de la terminal con el nombre que le haya dejado al binario.
+Una vez haya hecho esto y haya salido bien, entonces puede invocar al ejecutable desde cualquier parte de la terminal con el nombre que le haya dejado al binario
+añadido a la ruta `/usr/bin/` como `un_tester`, renombre con el comando `sudo mv /usr/bin/un_tester /usr/bin/pytester`.
