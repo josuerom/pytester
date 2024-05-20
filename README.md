@@ -3,7 +3,7 @@ Testeador, parseador y generador de plantillas para programas escritos en los le
 
 Para que estas automatizaciones funcionen correctamente, se necesita de: `pip install requests beautifulsoup4 termcolor`
 
-Solo debe modificar las líneas `29`, `55`, `59`, `168` y `156`.
+Solo debe modificar las líneas `29`, `55`, `59`, `168` y `156`. Además, si es que no tiene una carpeta en donde tenga las plantillas, entonces deberá crearla.
 
 Luego de haber modificado el programa y te esté funcionando correctamente, entonces ⤵️
 
