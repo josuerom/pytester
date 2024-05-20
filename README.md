@@ -6,7 +6,7 @@ Para que estas automatizaciones funcionen correctamente, debe instalar los tres 
 ## Lo que debe hacer
 Modifique las líneas `29`, `55`, `59`, `168` y `156` según sus necesidades. Además, si es que no tiene una carpeta en donde tenga las plantillas, entonces deberá crearla.
 
-Luego de haber modificado el programa y le esté funcionando el programa correctamente, entonces ⤵️
+Luego de haber modificado el programa y le esté funcionando correctamente, entonces ⤵️
 
 ## Convierte el modulo a un ejecutable
 ### En Windows
