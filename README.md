@@ -19,7 +19,7 @@ Ejecuta la instrucción con el nombre del modulo.py, en la misma ubicación que 
 pyinstaller --onefile wi_tester.py
 ```
 
-Ahora, debes agregar la ruta en donde se encuentre el ejecutable `pytester\build\` al PATH (Variables de entorno), para que cuando escribas el nombre del ejecutable desde cualquier
+Ahora, debes agregar la ruta en donde se encuentre el ejecutable `build\wi_tester.exe` al PATH (Variables de entorno), para que cuando escribas el nombre del ejecutable desde cualquier
 ubicación en la terminal lo pueda reconocer como un comando, y así mantener mayor velocidad.
 
 ### En Linux
