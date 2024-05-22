@@ -33,6 +33,7 @@ pip install pyinstaller
 Ahora se realiza la conversión a ejecutable para linux `/build/un_tester`
 ```python
 pyinstaller --onefile un_tester.py
+deactivated
 ```
 
 Ahora, debes mover el archivo ejecutable al directorio de binarios y concederle los permisos de ejecución
@@ -41,4 +42,4 @@ sudo mv build/un_tester /usr/bin
 sudo chmod +x /usr/bin/un_tester
 ```
 Una vez haya hecho esto y haya salido bien, entonces puede invocar al ejecutable desde cualquier parte de la terminal con el nombre que le haya dejado al binario
-añadido a la ruta `/usr/bin/` como `un_tester`, renombre con el comando `sudo mv /usr/bin/un_tester /usr/bin/pytester`.
+añadido a la ruta `/usr/bin/` como `un_tester`, renombre con el comando `sudo mv /usr/bin/un_tester /usr/bin/tester`.
