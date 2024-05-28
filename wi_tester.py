@@ -131,7 +131,7 @@ def ejecutar_python(programa):
          break
       with open(entrada_estandar, "r") as contenido_archivo_entrada:
          input_txt = "".join(contenido_archivo_entrada.readlines())
-      proceso = subprocess.Popen(["python3", "-OO", "-S", "-B", programa], stdin=subprocess.PIPE, stdout=subprocess.PIPE, 
+      proceso = subprocess.Popen(["python", "-OO", "-S", "-B", programa], stdin=subprocess.PIPE, stdout=subprocess.PIPE, 
                                  stderr=subprocess.PIPE, text=True)
       salida_generada, _ = proceso.communicate(input=input_txt)
       with open(respuesta, "r") as contenido_archivo_respuesta:
