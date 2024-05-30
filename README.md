@@ -35,7 +35,7 @@ pyinstaller --onefile un_tester.py
 ```
 Desactiva el entorno virtual
 ```bash
-deactivated
+deactivate
 ```
 Luego de esos, debe aparecer algo como esto `./dist/un_tester`; debes mover el archivo ejecutable al directorio de binarios del sistema y concederle los permisos de ejecución. Por lo que debe ejecutar
 ```bash
