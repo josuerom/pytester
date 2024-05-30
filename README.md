@@ -19,7 +19,7 @@ Ejecuta la instrucción con el nombre del modulo de python3 correspondiente, en 
 pyinstaller --onefile wi_tester.py
 ```
 
-Ahora, debes agregar la ruta en donde se encuentre el ejecutable `build\wi_tester.exe` al PATH (Variables de entorno), por ejemplo: `%HOMEPATH%\pytester\build`, para que cuando escribas el nombre del ejecutable (sin el .exe) desde cualquier parte de la terminal, el sistema lo pueda reconocer como un comando, y así mantener una mayor velocidad de invocación.
+Ahora, debes agregar la ruta en donde se encuentre el ejecutable `.\dist\wi_tester.exe` al PATH (Variables de entorno), por ejemplo: `%HOMEPATH%\pytester\dist`, para que cuando escribas el nombre del ejecutable (sin el .exe) desde cualquier parte de la terminal, el sistema lo pueda reconocer como un comando, y así mantener una mayor velocidad de invocación.
 
 ### En Linux & MacOS
 Ejecuta todas estas instrucciones dentro de la carpeta que contiene el modulo de python3.
@@ -37,7 +37,7 @@ Desactiva el entorno virtual
 ```bash
 deactivated
 ```
-Luego de esos, debe aparecer algo como esto `./build/un_tester`; debes mover el archivo ejecutable al directorio de binarios del sistema y concederle los permisos de ejecución. Por lo que debe ejecutar
+Luego de esos, debe aparecer algo como esto `./dist/un_tester`; debes mover el archivo ejecutable al directorio de binarios del sistema y concederle los permisos de ejecución. Por lo que debe ejecutar
 ```bash
 sudo mv build/un_tester /usr/bin
 sudo chmod +x /usr/bin/un_tester
