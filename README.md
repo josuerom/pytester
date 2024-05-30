@@ -1,20 +1,20 @@
-# pytester
+# PyTester
 Testeador, parseador y generador de plantillas para programas escritos en los lenguajes de programación C++, Java y Python. Esta herramienta está especialmente diseñada para abordar problemas directos de la plataforma [codeforces](https://codeforces.com/problemset) de manera ágil.
 
-Para que estas automatizaciones funcionen correctamente, debe instalar los tres paquetes de terceros: `pip install requests beautifulsoup4 termcolor`
+Para que estas automatizaciones funcionen correctamente, debe instalar los cuatro paquetes de terceros.
+```python
+pip install requests beautifulsoup4 termcolor pyinstaller
+```
+> En Linux & MacOS necesarimente debes crear un entorno virtual, para que ese comando funcione tal cual.
 
-## Lo que debe hacer
+## LO QUE DEBE HACER
 Modifique las líneas `29`, `55`, `59`, `168` y `156` según sus necesidades. Además, si es que no tiene una carpeta en donde almacena las plantillas, entonces deberá crearla.
 
 Luego de haber modificado el programa y le esté funcionando correctamente, entonces ⤵️
 
 ## Convierta el modulo a un ejecutable
 ### En Windows
-Instala el paquete
-```python
-pip install pyinstaller
-```
-Ejecuta la instrucción con el nombre del modulo.py, en la misma ubicación que se encuentre el archivo
+Ejecuta la instrucción con el nombre del modulo de python3 correspondiente, en la misma ubicación que se encuentre el archivo, por ejemplo:
 ```python
 pyinstaller --onefile wi_tester.py
 ```
@@ -22,22 +22,22 @@ pyinstaller --onefile wi_tester.py
 Ahora, debes agregar la ruta en donde se encuentre el ejecutable `build\wi_tester.exe` al PATH (Variables de entorno), por ejemplo: `%HOMEPATH%\pytester\build`, para que cuando escribas el nombre del ejecutable (sin el .exe) desde cualquier parte de la terminal, el sistema lo pueda reconocer como un comando, y así mantener una mayor velocidad de invocación.
 
 ### En Linux & MacOS
-Ejecuta todas estas instrucciones dentro de la carpeta que contiene el archivo `.py`
+Ejecuta todas estas instrucciones dentro de la carpeta que contiene el modulo de python3.
 
-Primero se crea un entorno virtual para poder instalar el paquete, luego se instala el paquete únicamente en el proyecto
-```python
+Crea un entorno virtual
+```bash
 python3 -m venv env
 source env/bin/activate
-pip install pyinstaller
 ```
-Ahora se realiza la conversión de módulo a ejecutable para Unix
-```python
+Ahora realiza la conversión de modulo a ejecutable para Unix
+```bash
 pyinstaller --onefile un_tester.py
+```
+Desactiva el entorno virtual
+```bash
 deactivated
 ```
-Debe aparecer algo como esto `/build/un_tester`, Ahora, debes mover el archivo ejecutable al directorio de binarios del sistema y concederle los permisos de ejecución.
-
-Ejecute
+Luego de esos, debe aparecer algo como esto `./build/un_tester`; debes mover el archivo ejecutable al directorio de binarios del sistema y concederle los permisos de ejecución. Por lo que debe ejecutar
 ```bash
 sudo mv build/un_tester /usr/bin
 sudo chmod +x /usr/bin/un_tester
