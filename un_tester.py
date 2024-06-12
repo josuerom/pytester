@@ -231,7 +231,7 @@ if __name__ == "__main__":
       nombre, lenguaje = sys.argv[3].split(".")
       copiar_plantilla(destino, nombre, lenguaje.lower())
    elif size_args == 3 and sys.argv[1] == "-s":
-      concurso, problema = sys.argv[2].split("/")
-      enviar_posible_solucion(concurso, problema.lower())
+      concurso = sys.argv[2]
+      enviar_posible_solucion(concurso)
    else:
       print(colored(f"Error fatal en:", "red"), sys.argv)
